@@ -49,7 +49,7 @@
     background: var(--bg);
     color: var(--text);
     font-family: 'Cairo', sans-serif;
-    padding-bottom: 130px;
+    padding-bottom: 160px;
   }
 
   /* ===== HEADER ===== */
@@ -546,7 +546,7 @@
 </footer>
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbyiLsQg1zHIy695f8OdYBlvTfhyoOwtLP3LDf8q--PX96khEyDi3GyN_lqZ2SInWyuoJw/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbw9zFhf-SpDjNEHHAMg6-693iBlTSjzMciKND0ullDyi0R9iufAAIdl7Uu8o4y0wsjjMQ/exec";
 
   // ===== تهيئة التواريخ =====
   document.getElementById('date').valueAsDate = new Date();
@@ -599,9 +599,35 @@
 
   // ===== حساب الوقت التلقائي =====
   function parseTimeToMins(str){
-    if(!str || !str.includes(':')) return null;
-    const [h, m] = str.split(':').map(Number);
+    if(!str) return null;
+    str = str.trim();
+
+    // استبدال الفاصلة أو النقطة بـ :
+    // يدعم: 5:20 و 5.20 و 5,20 و 520 و 1420
+    let h, m;
+
+    if(str.includes(':') || str.includes('.') || str.includes(',')){
+      const parts = str.split(/[:.,]/);
+      h = parseInt(parts[0]);
+      m = parseInt(parts[1]);
+    } else if(str.length <= 2){
+      // رقم لوحده زي "5" يعني 5:00
+      h = parseInt(str);
+      m = 0;
+    } else if(str.length === 3){
+      // "520" → 5:20
+      h = parseInt(str.slice(0, 1));
+      m = parseInt(str.slice(1));
+    } else if(str.length === 4){
+      // "1420" → 14:20
+      h = parseInt(str.slice(0, 2));
+      m = parseInt(str.slice(2));
+    } else {
+      return null;
+    }
+
     if(isNaN(h) || isNaN(m)) return null;
+    if(h < 0 || h > 23 || m < 0 || m > 59) return null;
     return h * 60 + m;
   }
 
