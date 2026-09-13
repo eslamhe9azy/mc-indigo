@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>سجل الأعطال اليومي</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="theme-color" content="#1B1D21">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="سجل الأعطال">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #1B1D21;
+    --panel: #232629;
+    --panel-2: #2A2E32;
+    --border: #383C41;
+    --text: #ECEDEE;
+    --muted: #9AA0A6;
+    --amber: #F0A928;
+    --amber-dim: #6B5324;
+    --green: #3FCB79;
+    --red: #E5484D;
+    --radius: 14px;
+  }
+  *{ box-sizing:border-box; }
+  html, body{ height:100%; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Cairo', sans-serif;
+    padding-bottom: 100px;
+  }
+  header{
+    background: linear-gradient(180deg, #202327, #1B1D21);
+    border-bottom: 3px solid var(--amber);
+    padding: calc(22px + env(safe-area-inset-top)) 18px 18px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  header h1{ margin:0; font-size: 20px; font-weight: 800; letter-spacing: 0.3px; }
+  header p{ margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+  .stripe{ display:flex; gap:3px; margin-top:12px; }
+  .stripe div{ height:4px; flex:1; background: var(--amber-dim); border-radius: 2px; }
+  .stripe div.on{ background: var(--amber); }
+
+  .offline-banner{
+    display:none;
+    background: var(--red);
+    color:#2a0a0b;
+    text-align:center;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 8px;
+  }
+  .offline-banner.show{ display:block; }
+
+  main{ padding: 16px; max-width: 560px; margin: 0 auto; }
+
+  .card{ background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; overflow: hidden; }
+  .card-head{ display:flex; align-items:center; gap:10px; padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--panel-2); }
+  .num{ width: 26px; height:26px; border-radius: 50%; background: var(--amber); color: #201804; font-weight: 800; font-size: 13px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .card-head h2{ margin:0; font-size: 15px; font-weight: 700; }
+  .card-body{ padding: 16px; }
+
+  label{ display:block; font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
+  label:first-child{ margin-top:0; }
+
+  input[type=text], input[type=date], input[type=time], input[type=number], select, textarea{
+    width: 100%; background: #1F2226; border: 1px solid var(--border); color: var(--text);
+    border-radius: 10px; padding: 12px 12px; font-family: 'Cairo', sans-serif; font-size: 15px; outline: none;
+  }
+  input:focus, select:focus, textarea:focus{ border-color: var(--amber); }
+  textarea{ min-height: 72px; resize: vertical; }
+
+  .row2{ display:flex; gap:10px; }
+  .row2 > div{ flex:1; }
+
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{ padding: 9px 14px; border: 1px solid var(--border); border-radius: 999px; font-size: 13px; color: var(--muted); cursor:pointer; user-select:none; }
+  .chip.active{ background: var(--amber); color: #201804; border-color: var(--amber); font-weight:700; }
+
+  footer{
+    position: fixed; bottom:0; left:0; right:0;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+    background: linear-gradient(0deg, var(--bg) 60%, transparent);
+  }
+  .save-btn{
+    max-width: 560px; margin: 0 auto; display:flex; width:100%; align-items:center; justify-content:center; gap:8px;
+    background: var(--green); color: #0C2214; border:none; border-radius: 12px; padding: 16px;
+    font-family:'Cairo', sans-serif; font-weight: 800; font-size: 16px; cursor:pointer;
+  }
+  .save-btn:disabled{ opacity:.6; }
+
+  .toast{
+    position: fixed; top: calc(14px + env(safe-area-inset-top)); left:50%; transform: translateX(-50%);
+    background: var(--panel-2); border: 1px solid var(--amber); padding: 12px 18px; border-radius: 10px;
+    font-size: 14px; display:none; z-index: 50; max-width: 90%; text-align:center;
+  }
+  .toast.success{ border-color: var(--green); }
+  .toast.error{ border-color: var(--red); }
+
+  .required::after{ content: ' *'; color: var(--amber); }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<header>
+  <h1>سجل الأعطال اليومي</h1>
+  <p>بديل ورقة الإنتاج والصيانة — بيتسجل مباشرة، ومش بيضيع</p>
+  <div class="stripe"><div class="on"></div><div class="on"></div><div class="on"></div><div class="on"></div></div>
+</header>
+
+<div class="offline-banner" id="offlineBanner">⚠ مفيش اتصال بالإنترنت دلوقتي — البيانات هتتحفظ لما الإشارة ترجع</div>
+
+<main>
+  <form id="faultForm">
+
+    <div class="card">
+      <div class="card-head"><div class="num">1</div><h2>بيانات أساسية</h2></div>
+      <div class="card-body">
+        <div class="row2">
+          <div><label class="required">التاريخ</label><input type="date" id="date" required></div>
+          <div>
+            <label class="required">الوردية</label>
+            <select id="shift" required>
+              <option value="">اختر</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+            </select>
+          </div>
+        </div>
+        <label class="required">القسم</label>
+        <input type="text" id="department" list="deptList" placeholder="مثال: 09" required>
+        <datalist id="deptList"></datalist>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="num">2</div><h2>بيانات الإنتاج (المُبلِّغ)</h2></div>
+      <div class="card-body">
+        <label class="required">اسم / كود موظف الإنتاج</label>
+        <input type="text" id="prodEmployee" placeholder="مثال: 2443" required>
+        <label>الوظيفة</label>
+        <input type="text" id="prodRole" placeholder="مثال: مشرف إنتاج">
+        <label class="required">الماكينة / الكود</label>
+        <input type="text" id="machine" list="machineList" placeholder="مثال: 20901" required>
+        <datalist id="machineList"></datalist>
+        <label>وقت بداية العطل</label>
+        <input type="time" id="faultStart">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="num">3</div><h2>بيانات الصيانة</h2></div>
+      <div class="card-body">
+        <label>اسم / كود فني الصيانة</label>
+        <input type="text" id="maintEmployee" placeholder="مثال: 2952">
+        <label>الوظيفة</label>
+        <input type="text" id="maintRole" placeholder="مثال: فني كهرباء">
+
+        <label>نوع الصيانة</label>
+        <div class="chips" id="maintTypes">
+          <div class="chip" data-val="ميكانيكية">ميكانيكية</div>
+          <div class="chip" data-val="كهربائية">كهربائية</div>
+          <div class="chip" data-val="وقائية">وقائية</div>
+          <div class="chip" data-val="تصحيحية">تصحيحية</div>
+        </div>
+
+        <label class="required">وصف العطل</label>
+        <textarea id="faultDescription" placeholder="وصف مختصر لما حصل..." required></textarea>
+
+        <label>نوع الإجراء</label>
+        <div class="chips" id="actionType">
+          <div class="chip" data-val="مؤقت">مؤقت</div>
+          <div class="chip" data-val="تصحيحي">تصحيحي</div>
+        </div>
+
+        <label>الإجراء الذي تم</label>
+        <textarea id="actionTaken" placeholder="وصف الإصلاح..."></textarea>
+
+        <label>حالة قطع الغيار</label>
+        <div class="chips" id="spareParts">
+          <div class="chip" data-val="جديد">جديد</div>
+          <div class="chip" data-val="مستعمل">مستعمل</div>
+          <div class="chip" data-val="لا يوجد">لا يوجد</div>
+        </div>
+
+        <label>ملاحظات أخرى</label>
+        <textarea id="otherNotes" placeholder="اختياري"></textarea>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="num">4</div><h2>إنهاء الصيانة</h2></div>
+      <div class="card-body">
+        <div class="row2">
+          <div><label>تاريخ الانتهاء</label><input type="date" id="endDate"></div>
+          <div><label>وقت الانتهاء</label><input type="time" id="endTime"></div>
+        </div>
+        <label>الوقت الفعلي للصيانة (بالدقيقة)</label>
+        <input type="number" id="actualMinutes" placeholder="مثال: 50">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head"><div class="num">5</div><h2>استلام الإنتاج بعد الإصلاح</h2></div>
+      <div class="card-body">
+        <label>ملاحظات الإنتاج بعد الاستلام</label>
+        <textarea id="receiveNotes" placeholder="اختياري"></textarea>
+        <div class="row2">
+          <div><label>وقت الاستلام</label><input type="time" id="receiveTime"></div>
+          <div><label>زمن التوقف الكلي (دقيقة)</label><input type="number" id="totalDowntime" placeholder="مثال: 50"></div>
+        </div>
+      </div>
+    </div>
+
+  </form>
+</main>
+
+<footer>
+  <button class="save-btn" id="saveBtn">✓ حفظ السجل</button>
+</footer>
+
+<script>
+  // ============================================================
+  // ⚠️ مهم جدًا: غيّر السطر ده برابط الـ Apps Script بتاعك
+  // (لازم ينتهي بـ /exec)
+  // ============================================================
+  const API_URL = "PASTE_YOUR_APPS_SCRIPT_EXEC_URL_HERE";
+
+  document.getElementById('date').valueAsDate = new Date();
+
+  function setupChips(containerId, multi){
+    const container = document.getElementById(containerId);
+    container.querySelectorAll('.chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        if(!multi){ container.querySelectorAll('.chip').forEach(c => c.classList.remove('active')); }
+        chip.classList.toggle('active');
+      });
+    });
+  }
+  setupChips('maintTypes', true);
+  setupChips('actionType', false);
+  setupChips('spareParts', false);
+
+  function getChipValues(id){ return [...document.querySelectorAll('#'+id+' .chip.active')].map(c => c.dataset.val); }
+  function getChipValue(id){ const v = getChipValues(id); return v.length ? v[0] : ''; }
+
+  function showToast(msg, type){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type;
+    t.style.display = 'block';
+    setTimeout(()=>{ t.style.display='none'; }, 3500);
+  }
+
+  // اقتراحات الأقسام/الماكينات
+  fetch(API_URL + '?action=suggestions')
+    .then(r => r.json())
+    .then(data => {
+      const deptList = document.getElementById('deptList');
+      (data.departments||[]).forEach(d => { const o=document.createElement('option'); o.value=d; deptList.appendChild(o); });
+      const machineList = document.getElementById('machineList');
+      (data.machines||[]).forEach(m => { const o=document.createElement('option'); o.value=m; machineList.appendChild(o); });
+    })
+    .catch(()=>{ /* تجاهل لو النت مقطوع */ });
+
+  // إشعار حالة الاتصال
+  function updateOnlineStatus(){
+    document.getElementById('offlineBanner').classList.toggle('show', !navigator.onLine);
+  }
+  window.addEventListener('online', updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // طابور محلي للسجلات اللي اتحفظت والنت مقطوع، تتبعت أول ما ترجع الإشارة
+  const QUEUE_KEY = 'faultLogQueue';
+  function getQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; }catch(e){ return []; } }
+  function setQueue(q){ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
+
+  function sendRecord(payload){
+    return fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // عشان نتفادى مشاكل CORS
+      body: JSON.stringify(payload),
+    }).then(r => r.json());
+  }
+
+  function flushQueue(){
+    const q = getQueue();
+    if(!q.length) return;
+    const remaining = [];
+    let chain = Promise.resolve();
+    q.forEach(item => {
+      chain = chain.then(() => sendRecord(item).catch(() => { remaining.push(item); }));
+    });
+    chain.then(() => setQueue(remaining));
+  }
+  window.addEventListener('online', flushQueue);
+  flushQueue();
+
+  document.getElementById('saveBtn').addEventListener('click', function(){
+    const form = document.getElementById('faultForm');
+    if(!form.checkValidity()){ form.reportValidity(); return; }
+
+    const payload = {
+      date: document.getElementById('date').value,
+      shift: document.getElementById('shift').value,
+      department: document.getElementById('department').value,
+      prodEmployee: document.getElementById('prodEmployee').value,
+      prodRole: document.getElementById('prodRole').value,
+      machine: document.getElementById('machine').value,
+      faultStart: document.getElementById('faultStart').value,
+      maintEmployee: document.getElementById('maintEmployee').value,
+      maintRole: document.getElementById('maintRole').value,
+      maintTypes: getChipValues('maintTypes'),
+      faultDescription: document.getElementById('faultDescription').value,
+      actionType: getChipValue('actionType'),
+      actionTaken: document.getElementById('actionTaken').value,
+      spareParts: getChipValue('spareParts'),
+      otherNotes: document.getElementById('otherNotes').value,
+      endDate: document.getElementById('endDate').value,
+      endTime: document.getElementById('endTime').value,
+      actualMinutes: document.getElementById('actualMinutes').value,
+      receiveNotes: document.getElementById('receiveNotes').value,
+      receiveTime: document.getElementById('receiveTime').value,
+      totalDowntime: document.getElementById('totalDowntime').value,
+    };
+
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ...';
+
+    function resetForm(){
+      form.reset();
+      document.getElementById('date').valueAsDate = new Date();
+      document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+      btn.disabled = false;
+      btn.textContent = '✓ حفظ السجل';
+    }
+
+    if(!navigator.onLine){
+      const q = getQueue(); q.push(payload); setQueue(q);
+      showToast('محفوظ محليًا، هيتبعت أوتوماتيك لما النت يرجع ✓', 'success');
+      resetForm();
+      return;
+    }
+
+    sendRecord(payload)
+      .then(res => {
+        if(res && res.success){
+          showToast('تم حفظ السجل بنجاح ✓', 'success');
+        } else {
+          const q = getQueue(); q.push(payload); setQueue(q);
+          showToast('حصل خطأ، اتحفظ محليًا وهيتبعت تاني', 'error');
+        }
+        resetForm();
+      })
+      .catch(() => {
+        const q = getQueue(); q.push(payload); setQueue(q);
+        showToast('مفيش اتصال، اتحفظ محليًا وهيتبعت لما النت يرجع', 'error');
+        resetForm();
+      });
+  });
+
+  // تسجيل الـ Service Worker (شرط أساسي لظهور "تثبيت التطبيق" الحقيقي)
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(()=>{});
+    });
+  }
+</script>
+
+</body>
+</html>
