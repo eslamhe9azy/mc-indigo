@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>سجل الأعطال اليومي</title>
-
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -13,54 +12,44 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="سجل الأعطال">
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:         #F0F4FA;
-    --surface:    #FFFFFF;
-    --panel-head: #EEF3FB;
-    --border:     #D1DCF0;
-    --border-hi:  #A8C0E8;
-
-    --text:       #0F1E38;
-    --muted:      #5A7099;
-    --placeholder:#A0B4D0;
-
-    --accent:     #1A56DB;
-    --accent-lt:  #EEF3FB;
-    --accent-glow:rgba(26,86,219,0.14);
-
-    --green:      #16A34A;
-    --green-bg:   #DCFCE7;
-    --red:        #DC2626;
-    --red-bg:     #FEE2E2;
-
+    --bg:          #F0F4FA;
+    --surface:     #FFFFFF;
+    --panel-head:  #EEF3FB;
+    --border:      #D1DCF0;
+    --border-hi:   #A8C0E8;
+    --text:        #0F1E38;
+    --muted:       #5A7099;
+    --placeholder: #A0B4D0;
+    --accent:      #1A56DB;
+    --accent-lt:   #EEF3FB;
+    --accent-glow: rgba(26,86,219,0.14);
+    --green:       #16A34A;
+    --red:         #DC2626;
+    --red-bg:      #FEE2E2;
     --shadow-card: 0 1px 4px rgba(15,30,56,0.07), 0 4px 16px rgba(15,30,56,0.05);
     --radius:      14px;
     --radius-sm:   10px;
   }
-
   *{ box-sizing:border-box; margin:0; padding:0; }
   html,body{ height:100%; }
-
   body{
     background: var(--bg);
     color: var(--text);
     font-family: 'Cairo', sans-serif;
-    padding-bottom: 160px;
   }
 
   /* ===== HEADER ===== */
   header{
     background: var(--accent);
-    padding: calc(18px + env(safe-area-inset-top)) 18px 14px;
+    padding: calc(16px + env(safe-area-inset-top)) 18px 13px;
     position: sticky;
     top: 0;
     z-index: 10;
   }
-
   .header-inner{
     max-width: 560px;
     margin: 0 auto;
@@ -68,57 +57,61 @@
     align-items: center;
     gap: 12px;
   }
-
   .header-icon{
-    width: 42px; height: 42px;
+    width: 40px; height: 40px;
     background: rgba(255,255,255,0.18);
-    border-radius: 11px;
+    border-radius: 10px;
     display: flex; align-items: center; justify-content: center;
-    font-size: 20px;
+    font-size: 19px;
     flex-shrink: 0;
   }
-
-  .header-text h1{
-    font-size: 18px;
-    font-weight: 800;
-    color: #fff;
-  }
-  .header-text p{
-    color: rgba(255,255,255,0.7);
-    font-size: 12px;
-    margin-top: 1px;
-    font-weight: 500;
-  }
-
-  .progress-bar{
-    max-width: 560px;
-    margin: 10px auto 0;
-    display: flex;
-    gap: 4px;
-  }
-  .progress-bar div{
-    height: 3px;
-    flex: 1;
-    background: rgba(255,255,255,0.25);
-    border-radius: 99px;
-  }
+  .header-text h1{ font-size: 17px; font-weight: 800; color: #fff; }
+  .header-text p{ color: rgba(255,255,255,0.7); font-size: 11px; margin-top: 1px; font-weight: 500; }
+  .progress-bar{ max-width: 560px; margin: 9px auto 0; display: flex; gap: 4px; }
+  .progress-bar div{ height: 3px; flex: 1; background: rgba(255,255,255,0.25); border-radius: 99px; }
   .progress-bar div.on{ background: rgba(255,255,255,0.9); }
 
-  /* ===== OFFLINE BANNER ===== */
+  /* ===== OFFLINE ===== */
   .offline-banner{
     display: none;
     background: var(--red-bg);
     border-bottom: 1px solid #FCA5A5;
     color: var(--red);
     text-align: center;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px;
+    font-size: 13px; font-weight: 600;
+    padding: 9px;
   }
   .offline-banner.show{ display: block; }
 
-  /* ===== MAIN ===== */
-  main{ padding: 18px 14px; max-width: 560px; margin: 0 auto; }
+  /* ===== DRAFT SYNC BANNER ===== */
+  .draft-banner{
+    display: none;
+    background: var(--accent-lt);
+    border-bottom: 1px solid var(--border-hi);
+    color: var(--accent);
+    text-align: center;
+    font-size: 12px; font-weight: 600;
+    padding: 9px 14px;
+    line-height: 1.6;
+  }
+  .draft-banner.show{ display: block; }
+  .draft-banner .dot{
+    display:inline-block; width:6px; height:6px; border-radius:50%;
+    background: var(--accent); margin-left:6px;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{ opacity: 0.3; transform: scale(0.8); }
+    50%{ opacity: 1; transform: scale(1.2); }
+  }
+
+  /* ===== LAYOUT ===== */
+  /* الصفحة كلها scroll عادي — مفيش footer fixed */
+  .page-wrap{
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 16px 14px 32px;
+  }
 
   /* ===== CARDS ===== */
   .card{
@@ -129,62 +122,41 @@
     overflow: hidden;
     box-shadow: var(--shadow-card);
   }
-
   .card-head{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 15px;
     border-bottom: 1px solid var(--border);
     background: var(--panel-head);
   }
-
   .num{
-    width: 27px; height: 27px;
+    width: 26px; height: 26px;
     border-radius: 7px;
     background: var(--accent);
-    color: #fff;
-    font-weight: 800;
-    font-size: 13px;
+    color: #fff; font-weight: 800; font-size: 13px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
-
-  .card-head h2{
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--text);
-  }
-
+  .card-head h2{ font-size: 14px; font-weight: 700; color: var(--text); }
   .card-head .badge{
     margin-right: auto;
-    font-size: 11px;
-    font-weight: 600;
+    font-size: 11px; font-weight: 600;
     color: var(--accent);
     background: var(--accent-lt);
     border: 1px solid var(--border-hi);
-    padding: 2px 8px;
-    border-radius: 99px;
+    padding: 2px 8px; border-radius: 99px;
   }
+  .card-body{ padding: 15px; }
 
-  .card-body{ padding: 16px; }
-
-  /* ===== FORM FIELDS ===== */
+  /* ===== FIELDS ===== */
   label{
     display: block;
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 12px; font-weight: 600;
     color: var(--muted);
-    margin: 15px 0 5px;
+    margin: 14px 0 5px;
   }
   label:first-child{ margin-top: 0; }
 
-  input[type=text],
-  input[type=date],
-  input[type=time],
-  input[type=number],
-  select,
-  textarea{
+  input[type=text], input[type=date], input[type=number], select, textarea{
     width: 100%;
     background: #FAFCFF;
     border: 1px solid var(--border);
@@ -202,9 +174,9 @@
     box-shadow: 0 0 0 3px var(--accent-glow);
     background: #fff;
   }
-  textarea{ min-height: 74px; resize: none; line-height: 1.65; }
+  textarea{ min-height: 72px; resize: none; line-height: 1.65; }
 
-  /* حقول الحساب التلقائي — readonly */
+  /* readonly = تلقائي */
   input[readonly]{
     background: var(--accent-lt);
     border-color: var(--border-hi);
@@ -212,10 +184,7 @@
     font-weight: 700;
     cursor: default;
   }
-  input[readonly]:focus{
-    box-shadow: none;
-    border-color: var(--border-hi);
-  }
+  input[readonly]:focus{ box-shadow: none; border-color: var(--border-hi); background: var(--accent-lt); }
 
   ::placeholder{ color: var(--placeholder); }
 
@@ -228,23 +197,19 @@
   }
 
   .row2{ display: flex; gap: 10px; }
-  .row2 > div{ flex: 1; }
+  .row2 > div{ flex: 1; min-width: 0; }
 
-  /* ===== AUTO-CALC BADGE ===== */
+  /* ===== AUTO BADGE ===== */
   .auto-badge{
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 10px;
-    font-weight: 700;
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-weight: 700;
     color: var(--accent);
     background: var(--accent-lt);
     border: 1px solid var(--border-hi);
     border-radius: 99px;
     padding: 1px 7px;
-    margin-right: 6px;
+    margin-right: 5px;
     vertical-align: middle;
-    letter-spacing: 0.2px;
   }
 
   /* ===== CHIPS ===== */
@@ -253,105 +218,51 @@
     padding: 7px 13px;
     border: 1px solid var(--border);
     border-radius: 99px;
-    font-size: 13px;
-    font-weight: 500;
+    font-size: 13px; font-weight: 500;
     color: var(--muted);
-    cursor: pointer;
-    user-select: none;
+    cursor: pointer; user-select: none;
     transition: all 0.15s;
     background: #fff;
   }
-  .chip:hover{
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-lt);
-  }
-  .chip.active{
-    background: var(--accent);
-    color: #fff;
-    border-color: var(--accent);
-    font-weight: 700;
-    box-shadow: 0 2px 8px var(--accent-glow);
-  }
+  .chip:hover{ border-color: var(--accent); color: var(--accent); background: var(--accent-lt); }
+  .chip.active{ background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 700; }
 
-  /* ===== REQUIRED ===== */
-  .required::after{
-    content: ' *';
-    color: var(--accent);
-    font-weight: 700;
-  }
+  .required::after{ content: ' *'; color: var(--accent); font-weight: 700; }
+  .field-divider{ height: 1px; background: var(--border); margin: 13px 0; }
 
-  /* ===== DIVIDER ===== */
-  .field-divider{
-    height: 1px;
-    background: var(--border);
-    margin: 14px 0;
-  }
+  .field-footer{ display: flex; justify-content: flex-end; margin-top: 3px; }
+  .char-counter{ font-size: 11px; color: var(--placeholder); font-variant-numeric: tabular-nums; }
 
-  /* ===== CHAR COUNTER ===== */
-  .field-footer{
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 3px;
-  }
-  .char-counter{
-    font-size: 11px;
-    color: var(--placeholder);
-    font-variant-numeric: tabular-nums;
-  }
-
-  /* ===== FOOTER ===== */
-  footer{
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    padding: 11px 14px calc(11px + env(safe-area-inset-bottom));
-    background: rgba(240,244,250,0.96);
-    border-top: 1px solid var(--border);
-    backdrop-filter: blur(10px);
-    transition: bottom 0.15s ease;
-    z-index: 20;
-  }
-
+  /* ===== SAVE BUTTON — داخل الصفحة مش fixed ===== */
   .save-btn{
-    max-width: 560px;
-    margin: 0 auto;
-    display: flex;
     width: 100%;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
     background: var(--accent);
-    color: #fff;
-    border: none;
+    color: #fff; border: none;
     border-radius: 12px;
-    padding: 14px;
+    padding: 15px;
     font-family: 'Cairo', sans-serif;
-    font-weight: 700;
-    font-size: 16px;
+    font-weight: 700; font-size: 16px;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
+    margin-top: 6px;
+    transition: opacity 0.2s, transform 0.1s;
     box-shadow: 0 4px 16px var(--accent-glow);
   }
-  .save-btn:hover{ opacity:0.9; }
+  .save-btn:hover{ opacity: 0.9; }
   .save-btn:active{ transform: scale(0.98); }
-  .save-btn:disabled{ opacity:0.5; cursor:not-allowed; transform:none; }
+  .save-btn:disabled{ opacity: 0.5; cursor: not-allowed; transform: none; }
 
   /* ===== TOAST ===== */
   .toast{
     position: fixed;
     top: calc(14px + env(safe-area-inset-top));
-    left: 50%;
-    transform: translateX(-50%);
+    left: 50%; transform: translateX(-50%);
     background: #fff;
     border: 1px solid var(--border);
-    padding: 11px 18px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    display: none;
-    z-index: 100;
-    max-width: 90%;
-    text-align: center;
+    padding: 11px 18px; border-radius: 12px;
+    font-size: 14px; font-weight: 600;
+    display: none; z-index: 100;
+    max-width: 90%; text-align: center;
     box-shadow: 0 8px 32px rgba(15,30,56,0.12);
     color: var(--text);
   }
@@ -379,198 +290,359 @@
 </header>
 
 <div class="offline-banner" id="offlineBanner">⚠ مفيش اتصال — البيانات هتتحفظ محليًا وتتبعت تلقائيًا لما النت يرجع</div>
+<div class="draft-banner" id="draftBanner"><span class="dot"></span>التسجيل ده بدأه حد تاني — البيانات بتتزامن تلقائيًا، وهو اللي هيحفظ السجل في الآخر</div>
 
-<main>
-  <form id="faultForm">
+<div class="page-wrap">
+<form id="faultForm">
 
-    <!-- CARD 1 -->
-    <div class="card">
-      <div class="card-head">
-        <div class="num">1</div>
-        <h2>البيانات الأساسية</h2>
-        <span class="badge">أساسي</span>
-      </div>
-      <div class="card-body">
-        <div class="row2">
-          <div>
-            <label class="required">التاريخ</label>
-            <input type="date" id="date" required>
-          </div>
-          <div>
-            <label class="required">الوردية</label>
-            <select id="shift" required>
-              <option value="">اختر</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-            </select>
-          </div>
+  <!-- ═══ CARD 1 : أساسي ═══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="num">1</div>
+      <h2>البيانات الأساسية</h2>
+      <span class="badge">أساسي</span>
+    </div>
+    <div class="card-body">
+      <div class="row2">
+        <div>
+          <label class="required">التاريخ</label>
+          <input type="date" id="date" required>
         </div>
-        <label class="required">القسم</label>
-        <input type="text" id="department" list="deptList" placeholder="مثال: 09" required>
-        <datalist id="deptList"></datalist>
+        <div>
+          <label class="required">الوردية</label>
+          <select id="shift" required>
+            <option value="">اختر</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select>
+        </div>
+      </div>
+      <label class="required">القسم</label>
+      <input type="text" id="department" list="deptList" placeholder="مثال: 09" required>
+      <datalist id="deptList"></datalist>
+    </div>
+  </div>
+
+  <!-- ═══ CARD 2 : الإنتاج ═══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="num">2</div>
+      <h2>بيانات الإنتاج</h2>
+      <span class="badge">المُبلِّغ</span>
+    </div>
+    <div class="card-body">
+      <label class="required">اسم / كود موظف الإنتاج</label>
+      <input type="text" id="prodEmployee" placeholder="مثال: 2443" required>
+      <label>الوظيفة</label>
+      <input type="text" id="prodRole" placeholder="مثال: مشرف إنتاج">
+      <div class="field-divider"></div>
+      <label class="required">الماكينة / الكود</label>
+      <input type="text" id="machine" list="machineList" placeholder="مثال: 20901" required>
+      <datalist id="machineList"></datalist>
+      <div class="row2">
+        <div>
+          <label>وقت بداية العطل</label>
+          <input type="text" id="faultStart" inputmode="numeric" placeholder="مثال: 14:30">
+        </div>
+        <div>
+          <label>وقت استلام الإنتاج</label>
+          <input type="text" id="receiveTime" inputmode="numeric" placeholder="مثال: 15:30">
+        </div>
+      </div>
+      <label>
+        وقت توقف الإنتاج (دقيقة)
+        <span class="auto-badge">⚡ تلقائي</span>
+      </label>
+      <input type="number" id="totalDowntime" placeholder="بداية العطل ← استلام الإنتاج" readonly>
+    </div>
+  </div>
+
+  <!-- ═══ CARD 3 : الصيانة ═══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="num">3</div>
+      <h2>بيانات الصيانة</h2>
+      <span class="badge">الفني</span>
+    </div>
+    <div class="card-body">
+      <label>اسم / كود فني الصيانة</label>
+      <input type="text" id="maintEmployee" placeholder="مثال: 2952">
+      <label>الوظيفة</label>
+      <input type="text" id="maintRole" placeholder="مثال: فني كهرباء">
+
+      <div class="field-divider"></div>
+
+      <div class="row2">
+        <div>
+          <label>وقت بداية الصيانة</label>
+          <input type="text" id="maintStart" inputmode="numeric" placeholder="مثال: 14:45">
+        </div>
+        <div>
+          <label>وقت انتهاء الصيانة</label>
+          <input type="text" id="endTime" inputmode="numeric" placeholder="مثال: 15:20">
+        </div>
+      </div>
+      <label>
+        وقت الصيانة الفعلي (دقيقة)
+        <span class="auto-badge">⚡ تلقائي</span>
+      </label>
+      <input type="number" id="actualMinutes" placeholder="بداية الصيانة ← انتهاء الصيانة" readonly>
+
+      <div class="field-divider"></div>
+
+      <label>نوع الصيانة</label>
+      <div class="chips" id="maintTypes">
+        <div class="chip" data-val="ميكانيكية">⚙️ ميكانيكية</div>
+        <div class="chip" data-val="كهربائية">⚡ كهربائية</div>
+        <div class="chip" data-val="وقائية">🛡 وقائية</div>
+        <div class="chip" data-val="تصحيحية">🔁 تصحيحية</div>
+      </div>
+
+      <label class="required">وصف العطل</label>
+      <textarea id="faultDescription" placeholder="وصف مختصر لما حصل..." required maxlength="500"></textarea>
+      <div class="field-footer"><span class="char-counter" id="faultDescCounter">0 / 500</span></div>
+
+      <label>نوع الإجراء</label>
+      <div class="chips" id="actionType">
+        <div class="chip" data-val="مؤقت">مؤقت</div>
+        <div class="chip" data-val="تصحيحي">تصحيحي</div>
+      </div>
+
+      <label>الإجراء الذي تم</label>
+      <textarea id="actionTaken" placeholder="وصف الإصلاح..."></textarea>
+
+      <div class="field-divider"></div>
+
+      <label>حالة قطع الغيار</label>
+      <div class="chips" id="spareParts">
+        <div class="chip" data-val="جديد">جديد</div>
+        <div class="chip" data-val="مستعمل">مستعمل</div>
+        <div class="chip" data-val="لا يوجد">لا يوجد</div>
+      </div>
+
+      <label>ملاحظات أخرى</label>
+      <textarea id="otherNotes" placeholder="اختياري"></textarea>
+    </div>
+  </div>
+
+  <!-- ═══ CARD 4 : إنهاء الصيانة ═══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="num">4</div>
+      <h2>إنهاء الصيانة</h2>
+      <span class="badge">التوقيت</span>
+    </div>
+    <div class="card-body">
+      <div class="row2">
+        <div>
+          <label>تاريخ الانتهاء</label>
+          <input type="date" id="endDate">
+        </div>
+        <div>
+          <label>كود العطل</label>
+          <input type="text" id="faultCode" placeholder="مثال: F-2024">
+        </div>
       </div>
     </div>
+  </div>
 
-    <!-- CARD 2 -->
-    <div class="card">
-      <div class="card-head">
-        <div class="num">2</div>
-        <h2>بيانات الإنتاج</h2>
-        <span class="badge">المُبلِّغ</span>
-      </div>
-      <div class="card-body">
-        <label class="required">اسم / كود موظف الإنتاج</label>
-        <input type="text" id="prodEmployee" placeholder="مثال: 2443" required>
-        <label>الوظيفة</label>
-        <input type="text" id="prodRole" placeholder="مثال: مشرف إنتاج">
-        <div class="field-divider"></div>
-        <label class="required">الماكينة / الكود</label>
-        <input type="text" id="machine" list="machineList" placeholder="مثال: 20901" required>
-        <datalist id="machineList"></datalist>
-        <label>وقت بداية العطل</label>
-        <input type="text" id="faultStart" inputmode="numeric" placeholder="مثال: 14:30">
-      </div>
+  <!-- ═══ CARD 5 : استلام الإنتاج ═══ -->
+  <div class="card">
+    <div class="card-head">
+      <div class="num">5</div>
+      <h2>استلام الإنتاج بعد الإصلاح</h2>
+      <span class="badge">الإغلاق</span>
     </div>
-
-    <!-- CARD 3 -->
-    <div class="card">
-      <div class="card-head">
-        <div class="num">3</div>
-        <h2>بيانات الصيانة</h2>
-        <span class="badge">الفني</span>
-      </div>
-      <div class="card-body">
-        <label>اسم / كود فني الصيانة</label>
-        <input type="text" id="maintEmployee" placeholder="مثال: 2952">
-        <label>الوظيفة</label>
-        <input type="text" id="maintRole" placeholder="مثال: فني كهرباء">
-
-        <div class="field-divider"></div>
-
-        <label>نوع الصيانة</label>
-        <div class="chips" id="maintTypes">
-          <div class="chip" data-val="ميكانيكية">⚙️ ميكانيكية</div>
-          <div class="chip" data-val="كهربائية">⚡ كهربائية</div>
-          <div class="chip" data-val="وقائية">🛡 وقائية</div>
-          <div class="chip" data-val="تصحيحية">🔁 تصحيحية</div>
-        </div>
-
-        <label class="required">وصف العطل</label>
-        <textarea id="faultDescription" placeholder="وصف مختصر لما حصل..." required maxlength="500"></textarea>
-        <div class="field-footer"><span class="char-counter" id="faultDescCounter">0 / 500</span></div>
-
-        <label>نوع الإجراء</label>
-        <div class="chips" id="actionType">
-          <div class="chip" data-val="مؤقت">مؤقت</div>
-          <div class="chip" data-val="تصحيحي">تصحيحي</div>
-        </div>
-
-        <label>الإجراء الذي تم</label>
-        <textarea id="actionTaken" placeholder="وصف الإصلاح..."></textarea>
-
-        <div class="field-divider"></div>
-
-        <label>حالة قطع الغيار</label>
-        <div class="chips" id="spareParts">
-          <div class="chip" data-val="جديد">جديد</div>
-          <div class="chip" data-val="مستعمل">مستعمل</div>
-          <div class="chip" data-val="لا يوجد">لا يوجد</div>
-        </div>
-
-        <label>ملاحظات أخرى</label>
-        <textarea id="otherNotes" placeholder="اختياري"></textarea>
-      </div>
+    <div class="card-body">
+      <label>ملاحظات الإنتاج بعد الاستلام</label>
+      <textarea id="receiveNotes" placeholder="اختياري"></textarea>
     </div>
+  </div>
 
-    <!-- CARD 4 : إنهاء الصيانة -->
-    <div class="card">
-      <div class="card-head">
-        <div class="num">4</div>
-        <h2>إنهاء الصيانة</h2>
-        <span class="badge">التوقيت</span>
-      </div>
-      <div class="card-body">
-        <div class="row2">
-          <div>
-            <label>تاريخ الانتهاء</label>
-            <input type="date" id="endDate">
-          </div>
-          <div>
-            <label>وقت الانتهاء</label>
-            <input type="text" id="endTime" inputmode="numeric" placeholder="مثال: 15:20">
-          </div>
-        </div>
-        <label>
-          الوقت الفعلي للصيانة (دقيقة)
-          <span class="auto-badge">⚡ تلقائي</span>
-        </label>
-        <input type="number" id="actualMinutes" placeholder="يُحسب من وقت البداية والانتهاء" min="0" readonly>
-      </div>
-    </div>
+  <!-- زرار الحفظ جوه الصفحة -->
+  <button type="button" class="save-btn" id="saveBtn">✓ حفظ السجل</button>
 
-    <!-- CARD 5 : استلام الإنتاج -->
-    <div class="card">
-      <div class="card-head">
-        <div class="num">5</div>
-        <h2>استلام الإنتاج بعد الإصلاح</h2>
-        <span class="badge">الإغلاق</span>
-      </div>
-      <div class="card-body">
-        <label>ملاحظات الإنتاج بعد الاستلام</label>
-        <textarea id="receiveNotes" placeholder="اختياري"></textarea>
-        <div class="row2">
-          <div>
-            <label>وقت استلام الإنتاج</label>
-            <input type="text" id="receiveTime" inputmode="numeric" placeholder="مثال: 15:30">
-          </div>
-          <div>
-            <label>
-              زمن التوقف الكلي (دقيقة)
-              <span class="auto-badge">⚡ تلقائي</span>
-            </label>
-            <input type="number" id="totalDowntime" placeholder="يُحسب من البداية للاستلام" min="0" readonly>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </form>
-</main>
-
-<footer>
-  <button class="save-btn" id="saveBtn">
-    ✓ حفظ السجل
-  </button>
-</footer>
+</form>
+</div><!-- end page-wrap -->
 
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbw9zFhf-SpDjNEHHAMg6-693iBlTSjzMciKND0ullDyi0R9iufAAIdl7Uu8o4y0wsjjMQ/exec";
+  const API_URL = https://script.google.com/macros/s/AKfycbyiLsQg1zHIy695f8OdYBlvTfhyoOwtLP3LDf8q--PX96khEyDi3GyN_lqZ2SInWyuoJw/exec";
 
-  // ===== تهيئة التواريخ =====
+  /*
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  مهم: أضف الكود ده في Apps Script بتاعك (نفس ملف doGet/doPost) ║
+  ╠══════════════════════════════════════════════════════════════════╣
+  ║                                                                  ║
+  ║  const DRAFT_KEY = 'sharedDraft';                                ║
+  ║                                                                  ║
+  ║  // ---- داخل doGet(e) أضف الشرط ده مع باقي الـ actions ----     ║
+  ║  if(e.parameter.action === 'getDraft'){                          ║
+  ║    const v = PropertiesService.getScriptProperties()             ║
+  ║                 .getProperty(DRAFT_KEY);                         ║
+  ║    return ContentService.createTextOutput(                       ║
+  ║      JSON.stringify({ draft: v ? JSON.parse(v) : null })         ║
+  ║    ).setMimeType(ContentService.MimeType.JSON);                  ║
+  ║  }                                                                ║
+  ║                                                                  ║
+  ║  // ---- داخل doPost(e) أضف الشرط ده في أول الدالة ----          ║
+  ║  const body = JSON.parse(e.postData.contents);                   ║
+  ║                                                                  ║
+  ║  if(body.action === 'updateDraft'){                               ║
+  ║    PropertiesService.getScriptProperties()                       ║
+  ║      .setProperty(DRAFT_KEY, JSON.stringify(body.draft));        ║
+  ║    return ContentService.createTextOutput(                       ║
+  ║      JSON.stringify({success:true})                              ║
+  ║    ).setMimeType(ContentService.MimeType.JSON);                  ║
+  ║  }                                                                ║
+  ║                                                                  ║
+  ║  if(body.action === 'clearDraft'){                                ║
+  ║    PropertiesService.getScriptProperties()                       ║
+  ║      .deleteProperty(DRAFT_KEY);                                  ║
+  ║    return ContentService.createTextOutput(                       ║
+  ║      JSON.stringify({success:true})                              ║
+  ║    ).setMimeType(ContentService.MimeType.JSON);                  ║
+  ║                                                                  ║
+  ║  // لو body مفيهوش action خالص — كمّل الكود القديم بتاعك اللي   ║
+  ║  // بيحفظ السجل النهائي في الشيت زي ما هو من غير أي تعديل.       ║
+  ║                                                                  ║
+  ╚══════════════════════════════════════════════════════════════════╝
+  */
+
+  // كل تبويب/جهاز ليه ID فريد، يُستخدم لتحديد "اللي بدأ التسجيل"
+  const SESSION_ID = Math.random().toString(36).slice(2) + Date.now().toString(36);
+  let currentOwnerId = null;   // صاحب السجل الحالي (اللي هيحفظ في الآخر)
+  let isOwner = false;
+  let suppressSync = false;    // لمنع تفعيل push أثناء تطبيق بيانات جاية من السيرفر
+  let draftPollTimer = null;
+  let draftPushTimer = null;
+
+  const draftBanner = document.getElementById('draftBanner');
+  const saveBtn2Ref  = () => document.getElementById('saveBtn');
+
+  const DRAFT_FIELD_IDS = [
+    'date','shift','department','prodEmployee','prodRole','machine',
+    'faultStart','receiveTime','maintEmployee','maintRole','maintStart','endTime',
+    'faultDescription','actionTaken','otherNotes','endDate','faultCode','receiveNotes'
+  ];
+
+  function collectDraftData(){
+    const d = {};
+    DRAFT_FIELD_IDS.forEach(id => { d[id] = document.getElementById(id).value; });
+    d.maintTypes = getChipValues('maintTypes');
+    d.actionType = getChipValue('actionType');
+    d.spareParts = getChipValue('spareParts');
+    d.ownerId = currentOwnerId;
+    d.updatedAt = Date.now();
+    return d;
+  }
+
+  function applyDraftData(data){
+    if(!data) return;
+    suppressSync = true;
+    const active = document.activeElement;
+    DRAFT_FIELD_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if(el === active) return; // متلمسش الحقل اللي المستخدم بيكتب فيه دلوقتي
+      if(data[id] !== undefined && el.value !== data[id]) el.value = data[id];
+    });
+    if(Array.isArray(data.maintTypes) && document.activeElement && document.activeElement.closest && !document.activeElement.closest('#maintTypes')){
+      document.querySelectorAll('#maintTypes .chip').forEach(c=>{
+        c.classList.toggle('active', data.maintTypes.includes(c.dataset.val));
+      });
+    }
+    if(data.actionType !== undefined){
+      document.querySelectorAll('#actionType .chip').forEach(c=>{
+        c.classList.toggle('active', c.dataset.val === data.actionType);
+      });
+    }
+    if(data.spareParts !== undefined){
+      document.querySelectorAll('#spareParts .chip').forEach(c=>{
+        c.classList.toggle('active', c.dataset.val === data.spareParts);
+      });
+    }
+    faultCounter.textContent = document.getElementById('faultDescription').value.length + ' / 500';
+    recalc();
+    suppressSync = false;
+  }
+
+  function updateOwnerUI(){
+    const btn = saveBtn2Ref();
+    if(currentOwnerId && !isOwner){
+      btn.disabled = true;
+      btn.textContent = '🔒 صاحب السجل هو اللي يحفظ';
+      draftBanner.classList.add('show');
+    } else {
+      btn.disabled = false;
+      btn.textContent = '✓ حفظ السجل';
+      draftBanner.classList.remove('show');
+    }
+  }
+
+  async function fetchDraft(){
+    try{
+      const res = await fetch(`${API_URL}?action=getDraft`).then(r=>r.json());
+      if(res && res.draft){
+        currentOwnerId = res.draft.ownerId || null;
+        isOwner = currentOwnerId === SESSION_ID;
+        applyDraftData(res.draft);
+      } else {
+        currentOwnerId = null;
+        isOwner = false;
+      }
+      updateOwnerUI();
+    } catch(e){ /* تجاهل مشاكل الشبكة، الفورم يفضل شغال محليًا */ }
+  }
+
+  function pushDraft(){
+    if(!currentOwnerId){ currentOwnerId = SESSION_ID; isOwner = true; }
+    const data = collectDraftData();
+    fetch(API_URL, {
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action:'updateDraft', draft: data })
+    }).catch(()=>{});
+    updateOwnerUI();
+  }
+
+  function scheduleDraftPush(){
+    if(suppressSync) return;
+    clearTimeout(draftPushTimer);
+    draftPushTimer = setTimeout(pushDraft, 700);
+  }
+
+  function clearDraftOnServer(){
+    try{
+      fetch(API_URL, {
+        method:'POST',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body: JSON.stringify({ action:'clearDraft' })
+      }).catch(()=>{});
+    }catch(e){}
+  }
+
+  // اربط كل حقول الفورم عشان أي تغيير يتبعت تلقائيًا للسيرفر
+  DRAFT_FIELD_IDS.forEach(id => {
+    document.getElementById(id).addEventListener('input', scheduleDraftPush);
+    document.getElementById(id).addEventListener('change', scheduleDraftPush);
+  });
+
+  // أول تحميل للصفحة: هات آخر بيانات محفوظة (لو في تسجيل شغال)
+  fetchDraft();
+  // كل 6 ثواني: زامن البيانات مع اللي بيحصل في أي جهاز تاني
+  draftPollTimer = setInterval(fetchDraft, 6000);
+
   document.getElementById('date').valueAsDate = new Date();
   document.getElementById('endDate').valueAsDate = new Date();
 
-  // ===== Footer keyboard fix =====
-  const footerEl = document.querySelector('footer');
-  function adjustFooterForKeyboard(){
-    if(!window.visualViewport) return;
-    const overlap = window.innerHeight - (window.visualViewport.height + window.visualViewport.offsetTop);
-    footerEl.style.bottom = Math.max(0, Math.round(overlap)) + 'px';
-  }
-  if(window.visualViewport){
-    window.visualViewport.addEventListener('resize', adjustFooterForKeyboard);
-    window.visualViewport.addEventListener('scroll', adjustFooterForKeyboard);
-  }
-
   // ===== Chips =====
-  function setupChips(containerId, multi){
-    const container = document.getElementById(containerId);
-    container.querySelectorAll('.chip').forEach(chip => {
+  function setupChips(id, multi){
+    document.getElementById(id).querySelectorAll('.chip').forEach(chip => {
       chip.addEventListener('click', () => {
-        if(!multi){ container.querySelectorAll('.chip').forEach(c => c.classList.remove('active')); }
+        if(!multi) document.getElementById(id).querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
         chip.classList.toggle('active');
+        scheduleDraftPush();
       });
     });
   }
@@ -578,8 +650,8 @@
   setupChips('actionType', false);
   setupChips('spareParts', false);
 
-  function getChipValues(id){ return [...document.querySelectorAll('#'+id+' .chip.active')].map(c => c.dataset.val); }
-  function getChipValue(id){ const v = getChipValues(id); return v.length ? v[0] : ''; }
+  function getChipValues(id){ return [...document.querySelectorAll('#'+id+' .chip.active')].map(c=>c.dataset.val); }
+  function getChipValue(id){ const v=getChipValues(id); return v.length?v[0]:''; }
 
   // ===== Toast =====
   function showToast(msg, type){
@@ -598,84 +670,51 @@
   });
 
   // ===== حساب الوقت التلقائي =====
-  function parseTimeToMins(str){
+  function parseTime(str){
     if(!str) return null;
     str = str.trim();
-
-    // استبدال الفاصلة أو النقطة بـ :
-    // يدعم: 5:20 و 5.20 و 5,20 و 520 و 1420
     let h, m;
-
     if(str.includes(':') || str.includes('.') || str.includes(',')){
       const parts = str.split(/[:.,]/);
-      h = parseInt(parts[0]);
-      m = parseInt(parts[1]);
+      h = parseInt(parts[0]); m = parseInt(parts[1]);
     } else if(str.length <= 2){
-      // رقم لوحده زي "5" يعني 5:00
-      h = parseInt(str);
-      m = 0;
+      h = parseInt(str); m = 0;
     } else if(str.length === 3){
-      // "520" → 5:20
-      h = parseInt(str.slice(0, 1));
-      m = parseInt(str.slice(1));
+      h = parseInt(str.slice(0,1)); m = parseInt(str.slice(1));
     } else if(str.length === 4){
-      // "1420" → 14:20
-      h = parseInt(str.slice(0, 2));
-      m = parseInt(str.slice(2));
-    } else {
-      return null;
-    }
-
-    if(isNaN(h) || isNaN(m)) return null;
-    if(h < 0 || h > 23 || m < 0 || m > 59) return null;
-    return h * 60 + m;
+      h = parseInt(str.slice(0,2)); m = parseInt(str.slice(2));
+    } else { return null; }
+    if(isNaN(h)||isNaN(m)) return null;
+    if(h<0||h>23||m<0||m>59) return null;
+    return h*60+m;
   }
 
-  function calcDiff(startMins, endMins){
-    if(startMins === null || endMins === null) return null;
-    let diff = endMins - startMins;
-    if(diff < 0) diff += 24 * 60;   // عبر منتصف الليل
-    return diff;
+  function diff(a, b){
+    if(a===null||b===null) return null;
+    let d = b - a;
+    if(d < 0) d += 24*60;
+    return d;
   }
 
-  function recalcAll(){
-    const startMins   = parseTimeToMins(document.getElementById('faultStart').value);
-    const endMins     = parseTimeToMins(document.getElementById('endTime').value);
-    const receiveMins = parseTimeToMins(document.getElementById('receiveTime').value);
+  function recalc(){
+    // وقت الإنتاج: بداية العطل → استلام الإنتاج
+    const prodStart   = parseTime(document.getElementById('faultStart').value);
+    const prodReceive = parseTime(document.getElementById('receiveTime').value);
+    const totalEl     = document.getElementById('totalDowntime');
+    const dProd = diff(prodStart, prodReceive);
+    totalEl.value = dProd !== null ? dProd : '';
 
-    // الوقت الفعلي للصيانة = بداية العطل ← وقت الانتهاء
-    const maintDiff = calcDiff(startMins, endMins);
-    const maintEl   = document.getElementById('actualMinutes');
-    if(maintDiff !== null){
-      maintEl.value = maintDiff;
-    } else {
-      maintEl.value = '';
-    }
-
-    // زمن التوقف الكلي = بداية العطل ← وقت الاستلام
-    const totalDiff = calcDiff(startMins, receiveMins);
-    const totalEl   = document.getElementById('totalDowntime');
-    if(totalDiff !== null){
-      totalEl.value = totalDiff;
-    } else {
-      totalEl.value = '';
-    }
+    // وقت الصيانة: بداية الصيانة → انتهاء الصيانة
+    const maintS  = parseTime(document.getElementById('maintStart').value);
+    const maintE  = parseTime(document.getElementById('endTime').value);
+    const maintEl = document.getElementById('actualMinutes');
+    const dMaint  = diff(maintS, maintE);
+    maintEl.value = dMaint !== null ? dMaint : '';
   }
 
-  ['faultStart', 'endTime', 'receiveTime'].forEach(id => {
-    document.getElementById(id).addEventListener('input', recalcAll);
+  ['faultStart','receiveTime','maintStart','endTime'].forEach(id => {
+    document.getElementById(id).addEventListener('input', recalc);
   });
-
-  // ===== Suggestions =====
-  fetch(API_URL + '?action=suggestions')
-    .then(r => r.json())
-    .then(data => {
-      const deptList = document.getElementById('deptList');
-      (data.departments||[]).forEach(d => { const o=document.createElement('option'); o.value=d; deptList.appendChild(o); });
-      const machineList = document.getElementById('machineList');
-      (data.machines||[]).forEach(m => { const o=document.createElement('option'); o.value=m; machineList.appendChild(o); });
-    })
-    .catch(()=>{});
 
   // ===== Online status =====
   function updateOnlineStatus(){
@@ -687,32 +726,42 @@
 
   // ===== Offline queue =====
   const QUEUE_KEY = 'faultLogQueue';
-  function getQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY)) || []; }catch(e){ return []; } }
+  function getQueue(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY))||[]; }catch(e){ return []; } }
   function setQueue(q){ localStorage.setItem(QUEUE_KEY, JSON.stringify(q)); }
 
   function sendRecord(payload){
-    return fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload),
-    }).then(r => r.json());
+    return fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(payload)
+    }).then(r=>r.json());
   }
 
   function flushQueue(){
-    const q = getQueue();
-    if(!q.length) return;
-    const remaining = [];
-    let chain = Promise.resolve();
-    q.forEach(item => {
-      chain = chain.then(() => sendRecord(item).catch(() => { remaining.push(item); }));
-    });
-    chain.then(() => setQueue(remaining));
+    const q=getQueue(); if(!q.length) return;
+    const remaining=[]; let chain=Promise.resolve();
+    q.forEach(item=>{ chain=chain.then(()=>sendRecord(item).catch(()=>{ remaining.push(item); })); });
+    chain.then(()=>setQueue(remaining));
   }
   window.addEventListener('online', flushQueue);
   flushQueue();
 
+  // ===== Suggestions =====
+  fetch(API_URL+'?action=suggestions')
+    .then(r=>r.json())
+    .then(data=>{
+      const dL=document.getElementById('deptList');
+      (data.departments||[]).forEach(d=>{ const o=document.createElement('option'); o.value=d; dL.appendChild(o); });
+      const mL=document.getElementById('machineList');
+      (data.machines||[]).forEach(m=>{ const o=document.createElement('option'); o.value=m; mL.appendChild(o); });
+    }).catch(()=>{});
+
   // ===== Save =====
   document.getElementById('saveBtn').addEventListener('click', function(){
+    if(currentOwnerId && !isOwner){
+      showToast('التسجيل ده بدأه حد تاني — هو اللي المفروض يحفظه','error');
+      return;
+    }
     const form = document.getElementById('faultForm');
     if(!form.checkValidity()){ form.reportValidity(); return; }
 
@@ -724,8 +773,13 @@
       prodRole:         document.getElementById('prodRole').value,
       machine:          document.getElementById('machine').value,
       faultStart:       document.getElementById('faultStart').value,
+      receiveTime:      document.getElementById('receiveTime').value,
+      totalDowntime:    document.getElementById('totalDowntime').value,
       maintEmployee:    document.getElementById('maintEmployee').value,
       maintRole:        document.getElementById('maintRole').value,
+      maintStart:       document.getElementById('maintStart').value,
+      endTime:          document.getElementById('endTime').value,
+      actualMinutes:    document.getElementById('actualMinutes').value,
       maintTypes:       getChipValues('maintTypes'),
       faultDescription: document.getElementById('faultDescription').value,
       actionType:       getChipValue('actionType'),
@@ -733,11 +787,8 @@
       spareParts:       getChipValue('spareParts'),
       otherNotes:       document.getElementById('otherNotes').value,
       endDate:          document.getElementById('endDate').value,
-      endTime:          document.getElementById('endTime').value,
-      actualMinutes:    document.getElementById('actualMinutes').value,
+      faultCode:        document.getElementById('faultCode').value,
       receiveNotes:     document.getElementById('receiveNotes').value,
-      receiveTime:      document.getElementById('receiveTime').value,
-      totalDowntime:    document.getElementById('totalDowntime').value,
     };
 
     const btn = document.getElementById('saveBtn');
@@ -748,42 +799,42 @@
       form.reset();
       document.getElementById('date').valueAsDate = new Date();
       document.getElementById('endDate').valueAsDate = new Date();
-      document.querySelectorAll('.chip.active').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.chip.active').forEach(c=>c.classList.remove('active'));
       document.getElementById('faultDescCounter').textContent = '0 / 500';
       document.getElementById('actualMinutes').value = '';
       document.getElementById('totalDowntime').value = '';
-      btn.disabled = false;
-      btn.textContent = '✓ حفظ السجل';
+      // فضّي السجل المشترك عشان يبدأ تسجيل جديد من الصفر لأي حد يفتح الصفحة
+      clearDraftOnServer();
+      currentOwnerId = null;
+      isOwner = false;
+      updateOwnerUI();
     }
 
     if(!navigator.onLine){
-      const q = getQueue(); q.push(payload); setQueue(q);
-      showToast('محفوظ محليًا — سيُرسل تلقائيًا عند عودة الاتصال ✓', 'success');
-      resetForm();
-      return;
+      const q=getQueue(); q.push(payload); setQueue(q);
+      showToast('محفوظ محليًا — سيُرسل تلقائيًا عند عودة الاتصال ✓','success');
+      resetForm(); return;
     }
 
     sendRecord(payload)
-      .then(res => {
-        if(res && res.success){
-          showToast('تم حفظ السجل بنجاح ✓', 'success');
+      .then(res=>{
+        if(res&&res.success){
+          showToast('تم حفظ السجل بنجاح ✓','success');
         } else {
-          const q = getQueue(); q.push(payload); setQueue(q);
-          showToast('حصل خطأ — اتحفظ محليًا وهيتبعت تاني', 'error');
+          const q=getQueue(); q.push(payload); setQueue(q);
+          showToast('حصل خطأ — اتحفظ محليًا وهيتبعت تاني','error');
         }
         resetForm();
       })
-      .catch(() => {
-        const q = getQueue(); q.push(payload); setQueue(q);
-        showToast('مفيش اتصال — اتحفظ محليًا وهيتبعت لما النت يرجع', 'error');
+      .catch(()=>{
+        const q=getQueue(); q.push(payload); setQueue(q);
+        showToast('مفيش اتصال — اتحفظ محليًا وهيتبعت لما النت يرجع','error');
         resetForm();
       });
   });
 
   if('serviceWorker' in navigator){
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(()=>{});
-    });
+    window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
   }
 </script>
 </body>
